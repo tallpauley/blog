@@ -1,0 +1,25 @@
+site_name: Chris Pauley's Technical Blog
+site_url: https://chrispauley.io/blog
+theme:
+  name: material
+  features:
+    - content.code.copy
+  palette:
+    primary: black
+plugins:
+- blog:
+    blog_dir: . 
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - footnotes
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
