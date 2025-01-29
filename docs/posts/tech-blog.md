@@ -268,7 +268,7 @@ git push --set-upstream origin main
 [^4]: In my case I needed to manually select `gh-pages` as the pages [source
     branch][github-pages-source]
 
-And just like that (hours later), **[chrispauley.dev]() is a go! 🎉**
+And just like that (hours later), **[chrispauley.dev](https://chrispauley.dev) is a go! 🎉**
 
 [uv-features]: https://docs.astral.sh/uv/getting-started/features/
 [Rewrap]: https://marketplace.visualstudio.com/items?itemName=stkb.rewrap
