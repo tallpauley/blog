@@ -31,7 +31,7 @@ tier at the moment. They reserve the Cursor chat (<kbd>⌘</kbd> +
 feature.
 
 However, LLM autocomplete is annoying for markdown. How would it know what I
-want to write before I write it? I think by writing, so LLM completion is a
+want to write before I write it? I think via writing, so LLM completion is a
 terrible idea for MD files for me. So type <kbd>⌘</kbd> + <kbd>shift</kbd> +
 <kbd>p</kbd>, go to "Preferences: Open User Settings (JSON)", and add this:
 ```json
@@ -141,17 +141,18 @@ Check it out at `http://localhost:8000`!
 Ok, "it's not really a blog", you say. Yet! We need to to set up `mkdocs.yml`
 [for a
 blog](https://squidfunk.github.io/mkdocs-material/setup/setting-up-a-blog/) (as
-well as footnotes, code highlighting, code copy, mermaidjs, etc)
+well as footnotes, code highlighting, code copy, mermaidjs, etc). Here's what I
+ended up with:
 
 ```yaml
 site_name: Chris Pauley's Technical Blog
-site_url: https://chrispauley.io/blog
+site_url: https://chrispauley.dev
 theme:
   name: material
   features:
     - content.code.copy
   palette:
-    primary: blue
+    primary: black
 plugins:
 - blog:
     blog_dir: . 
@@ -171,7 +172,8 @@ markdown_extensions:
   - pymdownx.superfences
 ```
 
-I put this file (`tech-blog.md`) in `docs/posts/`, so the directory structure now looks like:
+I put this file (`tech-blog.md`) in `docs/posts/`, so the directory structure of
+`docs/` now looks like:
 ```
 docs/
   index.md (empty file)
@@ -179,24 +181,40 @@ docs/
      tech-blog.md
 ```
 
-Then I added this to the top of `tech-blog.md`
+Then I added the date metadata to the top of `tech-blog.md`. See more [metadata
+options here][mkdocs-material-metadata].
 ```yaml
 ---
 date: 2025-01-28
 ---
 ```
 
-If you check out the site being served locally, it should look very blogesque!
+If you check out the site being served locally, it should look very blogesque now!
 
 ## Diagrams for Days
 
-People in the corporate world might not take you seriously without diagrams, so I prompted
-ChatGPT o1 with the following (conversing to fix the output): 
+People in the corporate world might not take you seriously without diagrams, so
+I prompted ChatGPT o1 with the following prompt (with some back and forth to fix
+it): 
 
-> Draw a mermaid JS diagram that shows how boring blogging about making a blog is
+```
+Draw a mermaid JS diagram that shows how boring blogging about making a blog is
+```
 
-"Boring" isn't really the word, more like "tedious", or "tiresome"? Idk, here it what it gave me:
+Here is what it gave me:
+```
+flowchart TB
+    A((Have an Idea)) --> B["Start Setting Up a Blog"]
+    B --> C["Realize You're Writing About Making a Blog"]
+    C --> D["Feel It's Getting Repetitive and Boring"]
+    D --> E["Decide to Write a Post About How Boring It Is"]
+    E --> F["Readers Notice It's Boring"]
+    F --> G["Lose Motivation Because It's Actually Boring)"]
+    G --> H["Ironic Twist: Continue Blogging About Boredom"]
+    H --> A((Loop Back to Another 'Brilliant' Idea))
+```
 
+We can render this [per the mkdocs-material instructions][mkdocs-material-mermaid]:
 ```mermaid
 flowchart TB
     A((Have an Idea)) --> B["Start Setting Up a Blog"]
@@ -213,29 +231,44 @@ Mermaid is set up correctly! Diagram City.
 
 ## Publish It
 
-Ok, it's getting tiresome blogging about setting up my blog while I'm setting up my blog. Let's publish it!
+Ok, it's getting tiresome blogging about setting up my blog while I'm setting up
+my blog. Let's publish it!
 
-First I just need to set up my DNS[^4]. I forgot I had tallpauley.com! Just:
+First I just need to set up my domain. I had `tallpauley.com`, but it
+transferred to Squarespace when Google Domains wound down, and both updating the
+DNS records there and trying to transfer out are [nightmarishly
+slow][squarespace-reddit]. So let's grab `chrispauley.dev` at
+[Porkbun](https://porkbun.com). Then I just:
 
-- Followed [this guide to verify ownership of your domain][verify-custom-domain] 
-- Followed [this guide to set up your custom domain][managing-custom-domain] 
+1. Followed [this GitHub guide to verify ownership of my domain][verify-custom-domain] 
+2. Followed [this GitHub guide to set up my custom domain][managing-custom-domain][^3]
 
-I remembered from publishing [wordsiv.com] that I need a `docs/CNAME` file:
+I remembered from publishing [wordsiv.com]() that I need a `docs/CNAME` file:
 ```sh
-echo tallpauley.com > docs/CNAME
+echo chrispauley.dev > docs/CNAME
 ```
 
-All we need is Github actions to deploy it. I showed you `uv`, but I'm kinda
-over this blog so let's just paste this [GitHub Actions
-Workflow](material-publish) into `.github/workflows/ci.yml` and call it a day!
+Let's use Github Actions to deploy it. I showed you `uv`, but I'm kinda over
+this blog post so let's just paste [this GitHub Actions
+Workflow][material-publish] (uses `pip`) into `.github/workflows/ci.yml` and
+push to `tallpauley/blog`[^4]:
+```sh
+git add origin git@github.com:tallpauley/blog.git
+git push --set-upstream origin main
+```
 
-Now I'm just going to push to 
+[^1]: Googled "Keyboard Shortcut Markdown, found [this gist, this
+    giiiist](https://gist.github.com/bittner/f3e2804e06c663510e939ca569ee483e])
+    (to the tune of Shania Twain).
+[^2]: Definitely check out [Butterick's Practical
+    Typography](https://practicaltypography.com/)! Great resource.
+[^3]: Actually [even easier through
+    Porkbun](https://kb.porkbun.com/article/64-how-to-connect-your-domain-to-github-pages).
+    I'm not sponsored in any way by them.
+[^4]: In my case I needed to manually select `gh-pages` as the pages [source
+    branch][github-pages-source]
 
-
-[^1]: Googled "Keyboard Shortcut Markdown, found [this gist, this giiiist](https://gist.github.com/bittner/f3e2804e06c663510e939ca569ee483e]) (to the tune of Shania Twain).
-[^2]: Definitely check out [Butterick's Practical Typography](https://practicaltypography.com/)! Great resource.
-[^3]: Eventually I'll set up GitHub Actions for the CI/CD
-[^4]: Which is now in Squarespace. RIP Google Domains.
+And just like that (hours later), **[chrispauley.dev]() is a go! 🎉**
 
 [uv-features]: https://docs.astral.sh/uv/getting-started/features/
 [Rewrap]: https://marketplace.visualstudio.com/items?itemName=stkb.rewrap
@@ -243,3 +276,7 @@ Now I'm just going to push to
 [verify-custom-domain]: https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/verifying-your-custom-domain-for-github-pages
 [managing-custom-domain]: https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/verifying-your-custom-domain-for-github-pages
 [material-publish]: https://squidfunk.github.io/mkdocs-material/publishing-your-site/#with-github-actions-material-for-mkdocs
+[squarespace-reddit]: https://www.reddit.com/r/squarespace/comments/1c9ne15/why_does_it_take_so_long_to_get_a_transfer_code/
+[mkdocs-material-metadata]: https://squidfunk.github.io/mkdocs-material/plugins/blog/#metadata
+[github-pages-source]: https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
+[mkdocs-material-mermaid]: https://squidfunk.github.io/mkdocs-material/reference/diagrams/#using-flowcharts
